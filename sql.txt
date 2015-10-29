@@ -1,0 +1,168 @@
+<웹어플 실습>
+
+ex1
+
+create database college;
+use college;
+
+create table student(
+	student_id	INTEGER NOT NULL PRIMARY KEY,
+	name		VARCHAR(10) NOT NULL,
+	year		INTEGER NOT NULL DEFAULT "1",
+	dept_no		INTEGER NOT NULL,
+	major		VARCHAR(20)
+);
+
+create table department(
+	dept_no		INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	dept_name	VARCHAR(20) NOT NULL UNIQUE,
+	office		VARCHAR(20) NOT NULL,
+	office_tel	VARCHAR(13)
+);
+
+alter table student
+	change column major major VARCHAR(40);
+
+alter table student
+	add column gender;
+
+alter table department
+	change dept_name dept_name VARCHAR(40);
+
+alter table department
+	change office office VARCHAR(30);
+
+--------------------------------------------------------------------------
+ex2
+
+alter table student
+	drop column gender;
+
+insert into student
+values (20070002, 'James Bond', 3, 4, 'Business Administration');
+.
+.
+.
+
+
+insert into department (dept_name,office,office_tel)
+values ('Computer Science', 'Engineering building', '02-3290-0123');
+.
+.
+.
+
+---------------------------------------------------------------------------
+ex3
+
+update department
+set dept_name = 'Electronic and Electrical Engineering'
+where dept_name = 'Electronic engineering';
+
+insert into department (dept_name, office, office_tel)
+values ('Education', 'Education Building', '02-3290-2347');
+
+update (student natural join department)
+set major = dept_name;
+
+update student
+set dept_no=6
+where name='Chloe';
+
+update (student natural join department)
+set major = dept_name
+where dept_no=6;
+
+---------------------------------------------------------------------------
+ex4
+
+select * from student where major='Computer Science';
+
+select id,year,major from student;
+
+select * from student where year=3;
+
+select * from student where year=1 or year=2;
+
+select * from student natural join department where dept_no=__;
+
+--------------------------------------------------------------------------
+ex5
+
+%%select * from student where student_id like '%2007%';
+
+select * from student order by student_id (asc,desc);
+
+select avg(year),major from student group by major having avg(year)>3;
+
+%%select * from student where major='business Administration' and student_id like '%2007%' limit 2;
+
+
+-------------------------------------------------------------------------
+ex 6
+
+1.select role from roles where movie_id = (select id from movies where name='Pi');
+
+2.select first_name,last_name from actors where id in(select actor_id from roles
+where movie_id =(select id from movies where name='Pi'));
+
+3. select first_name,last_name from actors where id in(
+select actor_id from roles where movie_id=(select id from moives
+where name='Kill Bill: Vol. 1') and actor_id in(
+select actor_id from roles where movie_id=(select id from movies
+where name='Kill bill: Vol. 2');
+
+4.select count(actor_id),actor_id from roles group by actor_id order by count(actor_id)
+desc limit 7;
+
+5.select count(genre),genre from movies_genres group by genre order by count(genre)
+desc limit 3;
+
+6.select * from directors where id in(
+select director_id from movies_directors where movie_id in(
+select movie_id from movies_genres where genre='Thriller')
+group by director_id order by count(movie_id)) limit 1;
+
+-------------------------------------------------------------------------
+ex 7
+
+1. select * from grades where course_id=(select id from courses where name='Computer Science 143');
+
+2. select name,grade from students,grades where students.id=grades.student_id
+and course_id=(select id from courses where name='Computer Science 143') and grade<='B-';
+
+3.select students.name,grade,courses.name from students,courses,grades
+where students.id=grades.student_id and courses.id=grades.course_id
+and grade<='B-';
+
+4. select count(student_id),name from grades,courses
+where courses.id=grades.course_id group by course_id having
+count(student_id)>=2;
+--------------------------------------------------------------------------
+extra 1%
+
+1. select name,year from movies where year=1995;
+
+2. select count(actor_id) from roles,movies where movies.id=roles.movie_id and name='Lost in Translation';
+
+3. select first_name,last_name from actors,roles,movies 
+where movies.id=roles.movie_id and actors.id=roles.actor_id and name='Lost in Translation';
+
+4. select first_name,last_name from directors
+where id=(select director_id from movies_directors 
+		where movie_id=(select id from movies where name='Fight Club'));
+
+5. select count(name) from movies, movies_directors
+where movies.id=movies_directors.movie_id and movies_directors.director_id=
+(select id from directors where first_name='Clint');
+
+6. select name from movies, movies_directors
+where movies.id=movies_directors.movie_id and movies_directors.director_id=
+(select id from directors where first_name='Clint');
+
+7. select * from directors where id in(
+select director_id from movies_directors natural join movies_genres where genre='Horror');
+
+8. select * from actors where id in(select actor_id from roles where movie_id in(
+select movie_id from movies_directors where director_id=(select id from directors
+where last_name='Nolan')));
+
